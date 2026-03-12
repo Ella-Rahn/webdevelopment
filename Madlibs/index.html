@@ -6,7 +6,6 @@
 </head>
 <body>
 <h1>Madlib</h1>
-
 <div id="input" >
   <p>[ADJECTIVE]  <input type="text"  placeholder="Enter here" id="input1"></p>
   <p>[NOUN]  <input type="text"  placeholder="Enter here" id="input2"></p>
@@ -21,10 +20,9 @@
   <p>[VEHICLE]  <input type="text"  placeholder="Enter here" id="input11"></p>
 
   <button onclick="madlibs()"> Create MadLib </button>
-
+<!--  <button onclick="hideStory()"> Hide MadLib </button>-->
 </div>
-
-<div id="outputtext">
+<div id="outputtext" style="display:none;">
   <p> One <span id="output1">[ADJECTIVE]</span> morning, I grabbed my <span id="output2">[NOUN]</span> and headed out the door toward school. I walked down <span id="output3">[PERSON'S NAME]</span>'s street, where the trees were covered in <span id="output4">[COLOR]</span> leaves. Suddenly, a <span id="output5">[ADJECTIVE]</span> squirrel jumped out and started <span id="output6">[VERB ENDING IN -ING]</span> right beside me. I screamed so loudly that my neighbor's <span id="output7">[ANIMAL]</span> woke up and joined me for the rest of the walk. By the time I reached the front doors of school, my hair looked completely <span id="output8">[ADJECTIVE]</span> and my backpack had somehow lost a <span id="output9">[NOUN]</span>. My teacher looked at me and said, "You are <span id="output10">[NUMBER]</span> minutes late — and why do you smell like <span id="output11">[NOUN]</span>?" I just smiled, took my seat, and decided that tomorrow I was taking the <span id="output12">[VEHICLE]</span>.
   </p>
 
@@ -39,21 +37,22 @@
 
     function madlibs() {
 
-    document.getElementById("output1").innerHTML = document.getElementById("input1").value;
-    document.getElementById("output2").innerHTML = document.getElementById("input2").value;
-    document.getElementById("output3").innerHTML = document.getElementById("input3").value;
-    document.getElementById("output4").innerHTML = document.getElementById("input4").value;
-    document.getElementById("output5").innerHTML = document.getElementById("input5").value;
-    document.getElementById("output6").innerHTML = document.getElementById("input6").value;
-    document.getElementById("output7").innerHTML = document.getElementById("input7").value;
-    document.getElementById("output8").innerHTML = document.getElementById("input5").value;
-    document.getElementById("output9").innerHTML = document.getElementById("input8").value;
-    document.getElementById("output10").innerHTML = document.getElementById("input9").value;
-    document.getElementById("output11").innerHTML = document.getElementById("input10").value;
-    document.getElementById("output12").innerHTML = document.getElementById("input11").value;
+      document.getElementById("output1").innerHTML = document.getElementById("input1").value;
+      document.getElementById("output2").innerHTML = document.getElementById("input2").value;
+      document.getElementById("output3").innerHTML = document.getElementById("input3").value;
+      document.getElementById("output4").innerHTML = document.getElementById("input4").value;
+      document.getElementById("output5").innerHTML = document.getElementById("input5").value;
+      document.getElementById("output6").innerHTML = document.getElementById("input6").value;
+      document.getElementById("output7").innerHTML = document.getElementById("input7").value;
+      document.getElementById("output8").innerHTML = document.getElementById("input5").value;
+      document.getElementById("output9").innerHTML = document.getElementById("input8").value;
+      document.getElementById("output10").innerHTML = document.getElementById("input9").value;
+      document.getElementById("output11").innerHTML = document.getElementById("input10").value;
+      document.getElementById("output12").innerHTML = document.getElementById("input11").value;
 
-  }
 
+      document.getElementById("outputtext").style.display = "block";
+    }
 </script>
 
 </html>
