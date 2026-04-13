@@ -2,15 +2,180 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ToDo</title>
+    <title>My To-Do List</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff3b0;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #ff8800;
+        }
+
+        #todo-container {
+            max-width: 400px;
+        }
+
+        input {
+            padding: 8px;
+            width: 70%;
+            border: 1px solid #ffcc66;
+            background-color: #fff8dc;
+        }
+
+        button {
+            padding: 8px;
+            background-color: #ffb347;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ffa500;
+        }
+
+        .todo-item {
+            background-color: #ffe5b4;
+            padding: 10px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .todo-item:hover {
+            background-color: #ffd580;
+        }
+
+        .left-side {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .todo-text {
+            flex-grow: 1;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+        .delete {
+            cursor: pointer;
+            color: red;
+            margin-left: 10px;
+        }
+    </style>
 </head>
+
 <body>
-<h1> To Do </h1>
-<ol>
-<li><input id="task1" type="text"></li>
-<li><input id="task2" type="text"></li>
-<li><input id="task3" type="text"></li>
-  <li><button id="add">Add</button></li>
-</ol>
+
+<h1>my to-do list:</h1>
+
+<div id="todo-container">
+    <input type="text" id="todo-input" placeholder="Enter a task...">
+    <button onclick="addTodo()">Add</button>
+
+    <div id="todo-list"></div>
+</div>
+
+<script>
+    function setCookie(name, value, days) {
+        const d = new Date();
+        d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+        document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + d.toUTCString() + ";path=/";
+    }
+
+    function getCookie(name) {
+        const cname = name + "=";
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let c of ca) {
+            while (c.charAt(0) === ' ') c = c.substring(1);
+            if (c.indexOf(cname) === 0) return c.substring(cname.length, c.length);
+        }
+        return "";
+    }
+
+    function saveTodos() {
+        const todos = [];
+        document.querySelectorAll('.todo-item').forEach(item => {
+            const text = item.querySelector('.todo-text').textContent;
+            const completed = item.querySelector('input').checked;
+            todos.push({ text, completed });
+        });
+        setCookie("todos", JSON.stringify(todos), 1);
+    }
+
+    function loadTodos() {
+        const data = getCookie("todos");
+        if (data) {
+            const todos = JSON.parse(data);
+            todos.forEach(todo => createTodo(todo.text, todo.completed));
+        }
+    }
+
+    function createTodo(text, completed = false) {
+        const div = document.createElement('div');
+        div.className = 'todo-item';
+
+        // LEFT SIDE
+        const left = document.createElement('div');
+        left.className = 'left-side';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = completed;
+
+        const span = document.createElement('span');
+        span.className = 'todo-text';
+        span.textContent = text;
+
+        if (completed) span.classList.add('completed');
+
+        checkbox.onchange = () => {
+            span.classList.toggle('completed');
+            saveTodos();
+        };
+
+        left.appendChild(checkbox);
+        left.appendChild(span);
+
+        // RIGHT SIDE (delete button)
+        const del = document.createElement('span');
+        del.textContent = '❌';
+        del.className = 'delete';
+        del.onclick = () => {
+            div.remove();
+            saveTodos();
+        };
+
+        div.appendChild(left);
+        div.appendChild(del);
+
+        document.getElementById('todo-list').appendChild(div);
+    }
+
+    function addTodo() {
+        const input = document.getElementById('todo-input');
+        const text = input.value.trim();
+
+        if (text === "") return;
+
+        createTodo(text);
+        saveTodos();
+
+        input.value = "";
+    }
+
+    window.onload = loadTodos;
+</script>
+
 </body>
 </html>
