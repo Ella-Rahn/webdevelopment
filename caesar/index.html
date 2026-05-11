@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emoji Cipher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #fff;
+            text-align: center;
+            padding: 30px;
+        }
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin: 10px;
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 20px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🔐 Emoji Cipher</h1>
+
+<textarea id="input" placeholder="Enter text..."></textarea><br>
+
+<button onclick="encode()">Encode</button>
+<button onclick="decode()">Decode</button>
+
+<div id="output"></div>
+
+<script>
+    const groups = {
+        "👄": ["a","b","c","d","e","f"],
+        "👻": ["g","h","i","j","k","l"],
+        "🤢": ["m","n","o","p","q","r","s"],
+        "🧚‍♂️": ["t","u","v","w","x","y","z"]
+    };
+
+    const indexEmojis = ["👇","🤌","🖖","🫳","🖐️","👌","🦶"];
+
+    let encodeMap = {};
+    let decodeMap = {};
+
+
+    for (let category in groups) {
+        groups[category].forEach((letter, i) => {
+            let pair = category + indexEmojis[i];
+            encodeMap[letter] = pair;
+            decodeMap[pair] = letter;
+        });
+    }
+
+
+    encodeMap[" "] = "🌍";
+    decodeMap["🌍"] = " ";
+
+    encodeMap["."] = "🌑";
+    decodeMap["🌑"] = ".";
+
+    encodeMap["?"] = "❓";
+    decodeMap["❓"] = "?";
+
+    encodeMap["!"] = "❗";
+    decodeMap["❗"] = "!";
+
+    function encode() {
+        let input = document.getElementById("input").value.toLowerCase();
+        let result = [];
+
+        for (let char of input) {
+            if (encodeMap[char]) {
+                result.push(encodeMap[char]);
+            } else {
+                result.push(char);
+            }
+        }
+
+        document.getElementById("output").innerText = result.join(" ");
+    }
+
+    function decode() {
+        let input = document.getElementById("input").value;
+        let parts = input.split(" ");
+        let result = "";
+
+        for (let part of parts) {
+            if (decodeMap[part]) {
+                result += decodeMap[part];
+            } else {
+                result += part;
+            }
+        }
+
+        document.getElementById("output").innerText = result;
+    }
+</script>
+
+</body>
+</html>

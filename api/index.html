@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Nutrition Search</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0fff4;
+            text-align: center;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #2e7d32;
+        }
+
+        select, input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .fruit-card {
+            background: white;
+            margin: 10px auto;
+            padding: 15px;
+            border-radius: 10px;
+            width: 320px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🍓 Fruit Nutrition Search</h1>
+
+<p>Search fruits by nutrition value</p>
+
+<select id="nutrition">
+    <option value="calories">Calories</option>
+    <option value="fat">Fat</option>
+    <option value="sugar">Sugar</option>
+    <option value="carbohydrates">Carbohydrates</option>
+    <option value="protein">Protein</option>
+</select>
+
+<input type="number" id="min" placeholder="Min" value="0">
+<input type="number" id="max" placeholder="Max" value="1000">
+
+<button onclick="searchFruits()">Search</button>
+
+<div id="results"></div>
+
+<script>
+    async function searchFruits() {
+        const nutrition = document.getElementById("nutrition").value;
+        const min = document.getElementById("min").value;
+        const max = document.getElementById("max").value;
+        const resultsDiv = document.getElementById("results");
+
+        resultsDiv.innerHTML = "Loading...";
+
+        try {
+            const url = `https://www.fruityvice.com/api/fruit/${nutrition}?min=${min}&max=${max}`;
+
+            const response = await fetch(url);
+            const fruits = await response.json();
+
+            if (!fruits.length) {
+                resultsDiv.innerHTML = "<p>No fruits found.</p>";
+                return;
+            }
+
+            resultsDiv.innerHTML = "";
+
+            fruits.forEach(fruit => {
+                resultsDiv.innerHTML += `
+            <div class="fruit-card">
+              <h2>${fruit.name}</h2>
+              <p><strong>Family:</strong> ${fruit.family}</p>
+              <p><strong>Genus:</strong> ${fruit.genus}</p>
+              <p><strong>Order:</strong> ${fruit.order}</p>
+
+              <h3>Nutrition</h3>
+              <p><strong>Calories:</strong> ${fruit.nutritions.calories}</p>
+              <p><strong>Fat:</strong> ${fruit.nutritions.fat}</p>
+              <p><strong>Sugar:</strong> ${fruit.nutritions.sugar}</p>
+              <p><strong>Carbohydrates:</strong> ${fruit.nutritions.carbohydrates}</p>
+              <p><strong>Protein:</strong> ${fruit.nutritions.protein}</p>
+            </div>
+          `;
+            });
+
+        }
+    }
+</script>
+
+</body>
+</html>
