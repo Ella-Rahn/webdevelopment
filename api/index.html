@@ -1,106 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fruit Nutrition Search</title>
+    <title>Fruit Nutrition</title>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f0fff4;
-            text-align: center;
-            padding: 30px;
+            font-family: Arial;
+            padding: 20px;
         }
 
-        h1 {
-            color: #2e7d32;
-        }
-
-        select, input, button {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
-
-        #results {
+        #card {
             margin-top: 20px;
-        }
-
-        .fruit-card {
-            background: white;
-            margin: 10px auto;
+            border: 1px solid #ccc;
             padding: 15px;
-            border-radius: 10px;
-            width: 320px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: left;
+            width: 300px;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-<h1>🍓 Fruit Nutrition Search</h1>
+<h1>Fruit Facts</h1>
 
-<p>Search fruits by nutrition value</p>
-
-<select id="nutrition">
-    <option value="calories">Calories</option>
-    <option value="fat">Fat</option>
-    <option value="sugar">Sugar</option>
-    <option value="carbohydrates">Carbohydrates</option>
-    <option value="protein">Protein</option>
+<select id="fruitSelect">
+    <option value="">Select a fruit</option>
 </select>
 
-<input type="number" id="min" placeholder="Min" value="0">
-<input type="number" id="max" placeholder="Max" value="1000">
+<div id="card">
+    <h2 id="name"></h2>
 
-<button onclick="searchFruits()">Search</button>
+    <p><b>Family:</b> <span id="family"></span></p>
+    <p><b>Order:</b> <span id="order"></span></p>
+    <p><b>Genus:</b> <span id="genus"></span></p>
 
-<div id="results"></div>
+    <hr>
+
+    <p><b>Calories:</b> <span id="calories"></span></p>
+    <p><b>Fat:</b> <span id="fat"></span> g</p>
+    <p><b>Sugar:</b> <span id="sugar"></span> g</p>
+    <p><b>Carbohydrates:</b> <span id="carbs"></span> g</p>
+    <p><b>Protein:</b> <span id="protein"></span> g</p>
+</div>
 
 <script>
-    async function searchFruits() {
-        const nutrition = document.getElementById("nutrition").value;
-        const min = document.getElementById("min").value;
-        const max = document.getElementById("max").value;
-        const resultsDiv = document.getElementById("results");
-
-        resultsDiv.innerHTML = "Loading...";
-
-        try {
-            const url = `https://www.fruityvice.com/api/fruit/${nutrition}?min=${min}&max=${max}`;
-
-            const response = await fetch(url);
-            const fruits = await response.json();
-
-            if (!fruits.length) {
-                resultsDiv.innerHTML = "<p>No fruits found.</p>";
-                return;
+    const fruits = [
+        {
+            name: "Banana",
+            family: "Musaceae",
+            order: "Zingiberales",
+            genus: "Musa",
+            nutritions: {
+                calories: 96,
+                fat: 0.2,
+                sugar: 17.2,
+                carbohydrates: 22,
+                protein: 1
             }
-
-            resultsDiv.innerHTML = "";
-
-            fruits.forEach(fruit => {
-                resultsDiv.innerHTML += `
-            <div class="fruit-card">
-              <h2>${fruit.name}</h2>
-              <p><strong>Family:</strong> ${fruit.family}</p>
-              <p><strong>Genus:</strong> ${fruit.genus}</p>
-              <p><strong>Order:</strong> ${fruit.order}</p>
-
-              <h3>Nutrition</h3>
-              <p><strong>Calories:</strong> ${fruit.nutritions.calories}</p>
-              <p><strong>Fat:</strong> ${fruit.nutritions.fat}</p>
-              <p><strong>Sugar:</strong> ${fruit.nutritions.sugar}</p>
-              <p><strong>Carbohydrates:</strong> ${fruit.nutritions.carbohydrates}</p>
-              <p><strong>Protein:</strong> ${fruit.nutritions.protein}</p>
-            </div>
-          `;
-            });
-
+        },
+        {
+            name: "Apple",
+            family: "Rosaceae",
+            order: "Rosales",
+            genus: "Malus",
+            nutritions: {
+                calories: 52,
+                fat: 0.4,
+                sugar: 10.3,
+                carbohydrates: 11.4,
+                protein: 0.3
+            }
+        },
+        {
+            name: "Orange",
+            family: "Rutaceae",
+            order: "Sapindales",
+            genus: "Citrus",
+            nutritions: {
+                calories: 43,
+                fat: 0.2,
+                sugar: 8.2,
+                carbohydrates: 8.3,
+                protein: 1
+            }
+        },
+        {
+            name: "Watermelon",
+            family: "Cucurbitaceae",
+            order: "Cucurbitales",
+            genus: "Citrullus",
+            nutritions: {
+                calories: 30,
+                fat: 0.2,
+                sugar: 6,
+                carbohydrates: 8,
+                protein: 0.6
+            }
+        },
+        {
+            name: "Mango",
+            family: "Anacardiaceae",
+            order: "Sapindales",
+            genus: "Mangifera",
+            nutritions: {
+                calories: 60,
+                fat: 0.38,
+                sugar: 13.7,
+                carbohydrates: 15,
+                protein: 0.82
+            }
+        },
+        {
+            name: "Strawberry",
+            family: "Rosaceae",
+            order: "Rosales",
+            genus: "Fragaria",
+            nutritions: {
+                calories: 29,
+                fat: 0.4,
+                sugar: 5.4,
+                carbohydrates: 5.5,
+                protein: 0.8
+            }
+        },
+        {
+            name: "Pineapple",
+            family: "Bromeliaceae",
+            order: "Poales",
+            genus: "Ananas",
+            nutritions: {
+                calories: 50,
+                fat: 0.12,
+                sugar: 9.85,
+                carbohydrates: 13.12,
+                protein: 0.54
+            }
+        },
+        {
+            name: "Kiwi",
+            family: "Actinidiaceae",
+            order: "Struthioniformes",
+            genus: "Apteryx",
+            nutritions: {
+                calories: 61,
+                fat: 0.5,
+                sugar: 9,
+                carbohydrates: 15,
+                protein: 1.1
+            }
         }
-    }
+    ];
+
+    const select = document.getElementById("fruitSelect");
+
+    fruits.forEach(fruit => {
+        const option = document.createElement("option");
+        option.value = fruit.name;
+        option.textContent = fruit.name;
+        select.appendChild(option);
+    });
+
+    select.addEventListener("change", () => {
+        const fruit = fruits.find(f => f.name === select.value);
+
+        if (!fruit) return;
+
+        document.getElementById("name").textContent = fruit.name;
+        document.getElementById("family").textContent = fruit.family;
+        document.getElementById("order").textContent = fruit.order;
+        document.getElementById("genus").textContent = fruit.genus;
+
+        document.getElementById("calories").textContent = fruit.nutritions.calories;
+        document.getElementById("fat").textContent = fruit.nutritions.fat;
+        document.getElementById("sugar").textContent = fruit.nutritions.sugar;
+        document.getElementById("carbs").textContent = fruit.nutritions.carbohydrates;
+        document.getElementById("protein").textContent = fruit.nutritions.protein;
+
+        document.getElementById("card").style.display = "block";
+    });
 </script>
 
 </body>
