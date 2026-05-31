@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #word {
+            font-size: 32px;
+            letter-spacing: 10px;
+            margin: 20px;
+            font-weight: bold;
+        }
+
+        button {
+            margin: 3px;
+            padding: 10px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .correct {
+            background-color: lightgreen;
+        }
+
+        .wrong {
+            background-color: lightcoral;
+        }
+
+        #keyboard {
+            max-width: 700px;
+            margin: 20px auto;
+        }
+
+        #hangmanImage {
+            width: 200px;
+            margin: 20px;
+        }
+
+        #letterInput {
+            padding: 8px;
+            width: 50px;
+            text-align: center;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        #message {
+            min-height: 30px;
+        }
+
+        #resetBtn {
+            display: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        #resetBtn:hover {
+            background-color: #45a049;
+        }
+
+        #loading {
+            color: gray;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Hangman</h1>
+
+<img
+        id="hangmanImage"
+        src="https://upload.wikimedia.org/wikipedia/commons/8/8b/Hangman-0.png"
+        alt="Hangman"
+>
+
+<div id="loading">Loading word list...</div>
+
+<div id="word"></div>
+
+<div id="keyboard"></div>
+
+<div>
+    <input
+            type="text"
+            id="letterInput"
+            maxlength="1"
+            autocomplete="off"
+    >
+    <button id="enterBtn">Enter</button>
+</div>
+
+<h3 id="message"></h3>
+
+<button id="resetBtn">Play Again</button>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+
+        const WORD_LIST_URL =
+            'https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt';
+
+        const alphabet = [
+            'A','B','C','D','E','F','G',
+            'H','I','J','K','L','M',
+            'N','O','P','Q','R','S',
+            'T','U','V','W','X','Y','Z'
+        ];
+
+        const hangmanSteps = [
+            'https://upload.wikimedia.org/wikipedia/commons/8/8b/Hangman-0.png',
+            'https://upload.wikimedia.org/wikipedia/commons/3/30/Hangman-1.png',
+            'https://upload.wikimedia.org/wikipedia/commons/7/70/Hangman-2.png',
+            'https://upload.wikimedia.org/wikipedia/commons/9/97/Hangman-3.png',
+            'https://upload.wikimedia.org/wikipedia/commons/2/27/Hangman-4.png',
+            'https://upload.wikimedia.org/wikipedia/commons/6/6b/Hangman-5.png',
+            'https://upload.wikimedia.org/wikipedia/commons/d/d6/Hangman-6.png'
+        ];
+
+        const keyboard = document.getElementById('keyboard');
+        const wordDiv = document.getElementById('word');
+        const message = document.getElementById('message');
+        const input = document.getElementById('letterInput');
+        const enterBtn = document.getElementById('enterBtn');
+        const image = document.getElementById('hangmanImage');
+        const resetBtn = document.getElementById('resetBtn');
+        const loading = document.getElementById('loading');
+
+        let words = [];
+        let randomWord = '';
+        let guessedLetters = [];
+        let wrongGuesses = 0;
+        let gameOver = false;
+
+        function disableGame() {
+
+            gameOver = true;
+
+            input.disabled = true;
+            enterBtn.disabled = true;
+
+            document
+                .querySelectorAll('#keyboard button')
+                .forEach(btn => btn.disabled = true);
+
+            resetBtn.style.display = 'inline-block';
+        }
+
+        function enableGame() {
+
+            gameOver = false;
+
+            input.disabled = false;
+            enterBtn.disabled = false;
+
+            document
+                .querySelectorAll('#keyboard button')
+                .forEach(btn => {
+
+                    btn.disabled = false;
+                    btn.classList.remove('correct');
+                    btn.classList.remove('wrong');
+                });
+
+            resetBtn.style.display = 'none';
+        }
+
+        function displayWord() {
+
+            let display = '';
+
+            for (let letter of randomWord) {
+
+                if (guessedLetters.includes(letter)) {
+                    display += letter + ' ';
+                } else {
+                    display += '_ ';
+                }
+            }
+
+            wordDiv.textContent = display;
+
+            const won = randomWord
+                .split('')
+                .every(letter => guessedLetters.includes(letter));
+
+            if (won) {
+
+                message.textContent =
+                    `🎉 You Win! The word was "${randomWord}".`;
+
+                disableGame();
+            }
+        }
+
+        function guessLetter(letter) {
+
+            if (gameOver) return;
+
+            letter = letter.toUpperCase();
+
+            if (!alphabet.includes(letter)) return;
+
+            if (guessedLetters.includes(letter)) return;
+
+            guessedLetters.push(letter);
+
+            const button = document.getElementById(letter);
+
+            if (randomWord.includes(letter)) {
+
+                if (button) {
+                    button.classList.add('correct');
+                    button.disabled = true;
+                }
+
+            } else {
+
+                wrongGuesses++;
+
+                if (button) {
+                    button.classList.add('wrong');
+                    button.disabled = true;
+                }
+
+                image.src = hangmanSteps[wrongGuesses];
+
+                if (wrongGuesses >= 6) {
+
+                    wordDiv.textContent =
+                        randomWord.split('').join(' ');
+
+                    message.textContent =
+                        ` Game Over! The word was "${randomWord}".`;
+
+                    disableGame();
+                }
+            }
+
+            displayWord();
+        }
+
+        function createKeyboard() {
+
+            keyboard.innerHTML = '';
+
+            alphabet.forEach(letter => {
+
+                const button = document.createElement('button');
+
+                button.textContent = letter;
+                button.id = letter;
+
+                button.addEventListener('click', () => {
+                    guessLetter(letter);
+                });
+
+                keyboard.appendChild(button);
+            });
+        }
+
+        function startGame() {
+
+            if (!words.length) return;
+
+            enableGame();
+
+            guessedLetters = [];
+            wrongGuesses = 0;
+
+            image.src = hangmanSteps[0];
+
+            message.textContent = '';
+
+            input.value = '';
+
+            randomWord =
+                words[
+                    Math.floor(Math.random() * words.length)
+                    ].toUpperCase();
+
+            displayWord();
+
+            input.focus();
+        }
+
+        async function loadWords() {
+
+            try {
+
+                const response =
+                    await fetch(WORD_LIST_URL);
+
+                const text =
+                    await response.text();
+
+                words = text
+                    .split('\n')
+                    .map(word => word.trim())
+                    .filter(word =>
+                        /^[a-z]+$/i.test(word) &&
+                        word.length >= 5 &&
+                        word.length <= 8
+                    );
+
+            } catch (error) {
+
+                console.error(error);
+
+                words = [
+                    'APPLE',
+                    'TRAIN',
+                    'HOUSE',
+                    'BUTTON',
+                    'PLANET',
+                    'ORANGE',
+                    'MONKEY',
+                    'GARDEN'
+                ];
+            }
+
+            loading.style.display = 'none';
+
+            startGame();
+        }
+
+        createKeyboard();
+
+        enterBtn.addEventListener('click', () => {
+
+            const value = input.value.trim();
+
+            if (value) {
+                guessLetter(value);
+            }
+
+            input.value = '';
+            input.focus();
+        });
+
+        input.addEventListener('keydown', function (event) {
+
+            if (event.key === 'Enter') {
+                enterBtn.click();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+
+            if (gameOver) return;
+
+            const key = event.key.toUpperCase();
+
+            if (alphabet.includes(key)) {
+                guessLetter(key);
+            }
+        });
+
+        resetBtn.addEventListener('click', startGame);
+
+        await loadWords();
+    });
+</script>
+
+</body>
+</html>
